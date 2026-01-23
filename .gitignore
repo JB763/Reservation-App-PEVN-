@@ -1,6 +1,7 @@
 # =========================
 # General
 # =========================
+
 .idea/
 .vscode/
 .DS_Store
@@ -16,7 +17,7 @@
 backend/node_modules/
 backend/dist/
 backend/data/
-
+backend/docker-compose.yml
 # Prisma
 backend/src/generated/
 backend/prisma/migrations/
