@@ -1,0 +1,37 @@
+# =========================
+# General
+# =========================
+.idea/
+.vscode/
+.DS_Store
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# =========================
+# Backend
+# =========================
+backend/node_modules/
+backend/dist/
+backend/data/
+
+# Prisma
+backend/src/generated/
+backend/prisma/migrations/
+backend/prisma/*.db
+
+# =========================
+# Frontend
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Frontend env
+frontend/.env
+frontend/.env.*
+
+
+

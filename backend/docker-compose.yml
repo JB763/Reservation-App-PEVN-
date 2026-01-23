@@ -1,0 +1,24 @@
+services:
+  postgres:
+    container_name: postgreSQL
+    image: postgres:18.1
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: jb763
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: reservationDB
+    volumes:
+
+      - ./data:/var/lib/postgresql
+  pgadmin:
+      image: dpage/pgadmin4
+      restart: always
+      ports:
+        - "8080:80"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: eddybrito21@gmail.com
+        PGADMIN_DEFAULT_PASSWORD: admin
+      depends_on:
+        - postgres
