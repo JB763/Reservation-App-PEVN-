@@ -1,8 +1,10 @@
 import {Request, Response} from 'express';
 import {prisma} from '../config/database'
 import {Role} from "../generated/enums";
-import {hashPassword} from '../utils/auth'
+import {checkPassword, hashPassword} from '../utils/auth'
+import {generateToken} from "../utils/jwt";
 
+//interface para tipado de usuario
 interface User {
     email: string,
     password: string,
@@ -19,10 +21,11 @@ export const createUser = async(req: Request<{}, {}, User>, res: Response) => {
 
         if(userExist){
             const error = new Error("El email ingresado ya existe");
-            res.status(400).json({error: error.message})
+            return res.status(400).json({error: error.message})
         }
         const hashedPassword = await hashPassword(password);
 
+        //enviamos datos requeridos, los default se asignan solos
         await prisma.user.create({
             data: { email,
                     password: hashedPassword,
@@ -37,4 +40,23 @@ export const createUser = async(req: Request<{}, {}, User>, res: Response) => {
         return res.status(400).json({error: error.message})
     }
 
+}
+//login de usuario
+export const login = async(req: Request<{}, {}, User>, res: Response) => {
+    const {email, password} = req.body;
+    const user = await prisma.user.findUnique({
+        where: {email}
+    });
+    if (!user) {
+        const error = new Error("El usuario no se encuentra o no esta registrado");
+        return res.status(400).json({error: error.message})
+    }
+    const isPasswordCorrect = await checkPassword(password, user.password)
+
+    if (!isPasswordCorrect) {
+        const error = new Error("Contraseña incorrecta, intente de nuevo");
+        return res.status(400).json({error: error.message})
+    }
+    const token = await generateToken({id: user.id.toString()});
+    res.send(token);
 }
