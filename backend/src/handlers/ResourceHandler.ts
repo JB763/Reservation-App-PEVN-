@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import {prisma} from '../config/database';
 
 interface Resource{
+    id: string
     name: string,
     active: boolean
 }
@@ -30,5 +31,32 @@ export const createResource = async(req: Request<{}, {}, Resource>, res: Respons
     }catch(e){
         const error = new Error("El recurso no se pudo crear");
         return res.status(500).json({error: error.message});
+    }
+}
+// traer todos los recursos
+export const getAll = async(req: Request<{}, {}, Resource>, res:Response) => {
+    try {
+        const resources = await prisma.resource.findMany();
+        res.status(200).json(resources)
+    }catch(e){
+        const error = new Error("No se pudo obtener ningun recurso");
+        return res.status(500).json({error: error.message})
+    }
+}
+
+export const getResource = async(req: Request<{id: string}>, res: Response) => {
+    try{
+        const {id} = req.params;
+        const idNumber = parseInt(id)
+        const resource = await prisma.resource.findUnique({
+            where: {id: idNumber}
+        })
+        if(!resource){
+            return res.status(400).json({message: "El recurso no fue encontrado"});
+        }
+        res.status(200).json(resource)
+    }catch(e){
+        const error = new Error("No se pudo obtener el recurso");
+        return res.status(500).json({error: error.message})
     }
 }
