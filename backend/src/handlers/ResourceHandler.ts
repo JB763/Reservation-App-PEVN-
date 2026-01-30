@@ -43,7 +43,7 @@ export const getAll = async(req: Request<{}, {}, Resource>, res:Response) => {
         return res.status(500).json({error: error.message})
     }
 }
-
+//traer resource por id
 export const getResource = async(req: Request<{id: string}>, res: Response) => {
     try{
         const {id} = req.params;
@@ -60,3 +60,30 @@ export const getResource = async(req: Request<{id: string}>, res: Response) => {
         return res.status(500).json({error: error.message})
     }
 }
+// editar resource
+export const updateResource = async(req: Request<{id: string},{},Resource>, res: Response) => {
+    try{
+        const {id} = req.params;
+        const {name, active} = req.body;
+        const idNumber = parseInt(id);
+        const resource = await prisma.resource.findUnique({
+            where: {id: idNumber}
+        });
+        if(!resource){
+            const error = new Error("El recurso no fue encontrado");
+            return res.status(400).json({error: error.message});
+        }
+        await prisma.resource.update({
+            where: {id: idNumber},
+            data: {
+                name,
+                active
+            }
+        })
+        return res.status(200).json({message: "El recurso fue actualizado con exito"});
+    }catch(e){
+        const error = new Error("No se pudo actualizar con exito");
+        return res.status(400).json({error: error.message});
+    }
+}
+
