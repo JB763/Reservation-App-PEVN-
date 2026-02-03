@@ -1,5 +1,11 @@
 import {Router} from 'express';
-import {createResource, getAll, getResource, updateResource} from '../handlers/ResourceHandler';
+import {
+    createResource,
+    deleteResource,
+    getAll,
+    getResource,
+    updateResource
+} from '../handlers/ResourceHandler';
 import {body, param} from 'express-validator';
 import {handleInputErrors} from "../middleware/validation";
 
@@ -38,5 +44,12 @@ ResourceRouter.put('/resource/:id',
         .isBoolean(),
     handleInputErrors,
     updateResource
+);
+ResourceRouter.delete('/resource/:id',
+    param("id")
+        .notEmpty().withMessage("El id no debe estar vacio")
+        .isNumeric().withMessage("El id proporcionado no es valido"),
+    handleInputErrors,
+    deleteResource
 )
 export default ResourceRouter;

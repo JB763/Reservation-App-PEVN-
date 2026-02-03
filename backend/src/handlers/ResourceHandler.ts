@@ -87,3 +87,25 @@ export const updateResource = async(req: Request<{id: string},{},Resource>, res:
     }
 }
 
+//delete resource
+export const deleteResource = async(req: Request<{id: string}>, res: Response) => {
+    try {
+        const {id} = req.params;
+        const idNumber = parseInt(id)
+        const resource = await prisma.resource.findUnique({
+            where: {id: idNumber}
+        })
+        if(!resource){
+            return res.status(400).json({message: "El recurso no se encontró"});
+        }
+        await prisma.resource.delete({
+            where: {id: idNumber}
+        })
+        return res.status(200).json({message: "El recurso fue eliminado exitosamente"});
+    }
+    catch(e){
+        const error = new Error("Error al eliminar recurso");
+        return res.status(400).json({error: error.message})
+    }
+}
+
